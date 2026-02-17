@@ -64,7 +64,7 @@ async function joinRoom(roomId, password, nickname) {
 // POST /api/session/reset
 // ===========================================================================
 describe('POST /api/session/reset', () => {
-  test('creator can reset session', async () => {
+  it('creator can reset session', async () => {
     const { token } = await createRoom();
 
     // Create a second tab
@@ -94,7 +94,7 @@ describe('POST /api/session/reset', () => {
     expect(res.body.activeTabId).toBe(res.body.tabs[0].id);
   });
 
-  test('broadcasts session-reset event', async () => {
+  it('broadcasts session-reset event', async () => {
     const { token } = await createRoom();
     ctx.clearBroadcasts();
 
@@ -107,7 +107,7 @@ describe('POST /api/session/reset', () => {
     expect(bc).toBeDefined();
   });
 
-  test('non-creator cannot reset session', async () => {
+  it('non-creator cannot reset session', async () => {
     const { roomId } = await createRoom({ password: 'password123' });
 
     // Join as a different user
@@ -121,7 +121,7 @@ describe('POST /api/session/reset', () => {
     expect(res.body.error).toMatch(/creator/i);
   });
 
-  test('resets tab data directories', async () => {
+  it('resets tab data directories', async () => {
     const { token, workDir } = await createRoom();
 
     // Create a tab and add a file to its data directory
@@ -150,7 +150,7 @@ describe('POST /api/session/reset', () => {
     expect(after).toBeNull();
   });
 
-  test('creates new tab data directory after reset', async () => {
+  it('creates new tab data directory after reset', async () => {
     const { token, workDir } = await createRoom();
 
     await request(app)
@@ -165,7 +165,7 @@ describe('POST /api/session/reset', () => {
     expect(stat.isDirectory()).toBe(true);
   });
 
-  test('fresh session has proper tab structure', async () => {
+  it('fresh session has proper tab structure', async () => {
     const { token } = await createRoom();
 
     const res = await request(app)
@@ -182,13 +182,13 @@ describe('POST /api/session/reset', () => {
     expect(tab.status).toBeNull();
   });
 
-  test('requires authentication', async () => {
+  it('requires authentication', async () => {
     await request(app)
       .post('/api/session/reset')
       .expect(401);
   });
 
-  test('cleans up PTY processes on reset', async () => {
+  it('cleans up PTY processes on reset', async () => {
     const { roomId, token } = await createRoom();
 
     // Set up mock PTY entry
@@ -219,7 +219,7 @@ describe('POST /api/session/reset', () => {
     expect(ctx.routeCtx.roomPtyKeys.has(roomId)).toBe(false);
   });
 
-  test('subsequent tab operations work after reset', async () => {
+  it('subsequent tab operations work after reset', async () => {
     const { token } = await createRoom();
 
     // Reset
