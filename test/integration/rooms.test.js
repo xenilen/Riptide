@@ -61,12 +61,12 @@ async function joinRoom(roomId, password, nickname) {
 // GET /api/rooms
 // ===========================================================================
 describe('GET /api/rooms', () => {
-  test('returns empty array when no rooms exist', async () => {
+  it('returns empty array when no rooms exist', async () => {
     const res = await request(app).get('/api/rooms').expect(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
 
-  test('returns rooms with id, name, userCount, created after creation', async () => {
+  it('returns rooms with id, name, userCount, created after creation', async () => {
     const { roomId } = await createRoom({ name: 'ListTest' });
 
     const res = await request(app).get('/api/rooms').expect(200);
@@ -79,7 +79,7 @@ describe('GET /api/rooms', () => {
     expect(found.passwordHash).toBeUndefined();
   });
 
-  test('does not require authentication', async () => {
+  it('does not require authentication', async () => {
     // No Authorization header — should still succeed
     const res = await request(app).get('/api/rooms');
     expect(res.status).toBe(200);
@@ -90,7 +90,7 @@ describe('GET /api/rooms', () => {
 // POST /api/rooms
 // ===========================================================================
 describe('POST /api/rooms', () => {
-  test('creates room with valid name + password + nickname', async () => {
+  it('creates room with valid name + password + nickname', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({ name: 'Valid Room', password: 'longpassword', nickname: 'user1' })
@@ -102,7 +102,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.nickname).toBe('user1');
   });
 
-  test('rejects missing name', async () => {
+  it('rejects missing name', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({ password: 'longpassword', nickname: 'user1' })
@@ -111,7 +111,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.error).toMatch(/name/i);
   });
 
-  test('rejects empty name', async () => {
+  it('rejects empty name', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({ name: '   ', password: 'longpassword', nickname: 'user1' })
@@ -120,7 +120,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.error).toMatch(/name/i);
   });
 
-  test('rejects short password (< 8 chars)', async () => {
+  it('rejects short password (< 8 chars)', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({ name: 'Room', password: 'short', nickname: 'user1' })
@@ -129,7 +129,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.error).toMatch(/password/i);
   });
 
-  test('rejects password longer than 128 chars', async () => {
+  it('rejects password longer than 128 chars', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({ name: 'Room', password: 'a'.repeat(129), nickname: 'user1' })
@@ -138,7 +138,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.error).toMatch(/password/i);
   });
 
-  test('rejects missing nickname', async () => {
+  it('rejects missing nickname', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({ name: 'Room', password: 'longpassword' })
@@ -147,7 +147,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.error).toMatch(/nickname/i);
   });
 
-  test('rejects room name longer than 64 chars', async () => {
+  it('rejects room name longer than 64 chars', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({ name: 'R'.repeat(65), password: 'longpassword', nickname: 'user1' })
@@ -156,7 +156,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.error).toMatch(/room name/i);
   });
 
-  test('rejects nickname longer than 32 chars', async () => {
+  it('rejects nickname longer than 32 chars', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({ name: 'Room', password: 'longpassword', nickname: 'N'.repeat(33) })
@@ -165,7 +165,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.error).toMatch(/nickname/i);
   });
 
-  test('trims name and nickname', async () => {
+  it('trims name and nickname', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({ name: '  Trimmed Room  ', password: 'longpassword', nickname: '  trimuser  ' })
@@ -175,7 +175,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.nickname).toBe('trimuser');
   });
 
-  test('creates room with workDir', async () => {
+  it('creates room with workDir', async () => {
     const workDir = path.join(ctx.tempDir, 'workdir-' + crypto.randomBytes(4).toString('hex'));
 
     const res = await request(app)
@@ -190,7 +190,7 @@ describe('POST /api/rooms', () => {
     expect(stat.isDirectory()).toBe(true);
   });
 
-  test('rejects relative workDir path', async () => {
+  it('rejects relative workDir path', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({ name: 'Room', password: 'longpassword', nickname: 'user1', workDir: 'relative/path' })
@@ -199,7 +199,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.error).toMatch(/absolute/i);
   });
 
-  test('rejects workDir with path traversal sequences', async () => {
+  it('rejects workDir with path traversal sequences', async () => {
     const res = await request(app)
       .post('/api/rooms')
       .send({
@@ -213,7 +213,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.error).toMatch(/invalid sequences/i);
   });
 
-  test('rejects workDir path longer than 512 chars', async () => {
+  it('rejects workDir path longer than 512 chars', async () => {
     const longPath = '/tmp/' + 'a'.repeat(510);
     const res = await request(app)
       .post('/api/rooms')
@@ -228,7 +228,7 @@ describe('POST /api/rooms', () => {
     expect(res.body.error).toMatch(/too long/i);
   });
 
-  test('session token is valid after creation', async () => {
+  it('session token is valid after creation', async () => {
     const { roomId, token } = await createRoom({ name: 'SessionRoom' });
 
     // Router is at /rooms, mounted at /api, so full path is /api/rooms/validate
@@ -245,7 +245,7 @@ describe('POST /api/rooms', () => {
 // POST /api/rooms/:id/join
 // ===========================================================================
 describe('POST /api/rooms/:id/join', () => {
-  test('joins room with correct password', async () => {
+  it('joins room with correct password', async () => {
     const { roomId } = await createRoom({ password: 'correctpass' });
 
     // The router path is /rooms/:id/join, mounted at /api
@@ -259,7 +259,7 @@ describe('POST /api/rooms/:id/join', () => {
     expect(res.body.nickname).toBe('joiner');
   });
 
-  test('rejects wrong password with 403', async () => {
+  it('rejects wrong password with 403', async () => {
     const { roomId } = await createRoom({ password: 'correctpass' });
 
     const res = await request(app)
@@ -270,7 +270,7 @@ describe('POST /api/rooms/:id/join', () => {
     expect(res.body.error).toMatch(/wrong password/i);
   });
 
-  test('returns 404 for non-existent room', async () => {
+  it('returns 404 for non-existent room', async () => {
     const res = await request(app)
       .post('/api/rooms/deadbeef/join')
       .send({ password: 'anything1', nickname: 'joiner' })
@@ -279,7 +279,7 @@ describe('POST /api/rooms/:id/join', () => {
     expect(res.body.error).toMatch(/not found/i);
   });
 
-  test('rejects invalid room ID format', async () => {
+  it('rejects invalid room ID format', async () => {
     const res = await request(app)
       .post('/api/rooms/invalid-id/join')
       .send({ password: 'anything1', nickname: 'joiner' })
@@ -288,7 +288,7 @@ describe('POST /api/rooms/:id/join', () => {
     expect(res.body.error).toMatch(/invalid room/i);
   });
 
-  test('rejects missing password', async () => {
+  it('rejects missing password', async () => {
     const { roomId } = await createRoom();
 
     const res = await request(app)
@@ -299,7 +299,7 @@ describe('POST /api/rooms/:id/join', () => {
     expect(res.body.error).toMatch(/password/i);
   });
 
-  test('rejects missing nickname', async () => {
+  it('rejects missing nickname', async () => {
     const { roomId } = await createRoom({ password: 'correctpass' });
 
     const res = await request(app)
@@ -310,7 +310,7 @@ describe('POST /api/rooms/:id/join', () => {
     expect(res.body.error).toMatch(/nickname/i);
   });
 
-  test('rejects nickname longer than 32 chars', async () => {
+  it('rejects nickname longer than 32 chars', async () => {
     const { roomId } = await createRoom({ password: 'correctpass' });
 
     const res = await request(app)
@@ -326,7 +326,7 @@ describe('POST /api/rooms/:id/join', () => {
 // GET /api/rooms/validate
 // ===========================================================================
 describe('GET /api/rooms/validate', () => {
-  test('validates a good session token', async () => {
+  it('validates a good session token', async () => {
     const { roomId, token } = await createRoom({ name: 'ValidateRoom' });
 
     const res = await request(app)
@@ -339,7 +339,7 @@ describe('GET /api/rooms/validate', () => {
     expect(res.body.nickname).toBe('creator');
   });
 
-  test('returns 401 for invalid token', async () => {
+  it('returns 401 for invalid token', async () => {
     const res = await request(app)
       .get('/api/rooms/validate')
       .set('Authorization', 'Bearer invalidtoken123')
@@ -348,7 +348,7 @@ describe('GET /api/rooms/validate', () => {
     expect(res.body.error).toMatch(/not authenticated/i);
   });
 
-  test('returns 401 with no Authorization header', async () => {
+  it('returns 401 with no Authorization header', async () => {
     const res = await request(app)
       .get('/api/rooms/validate')
       .expect(401);
@@ -361,7 +361,7 @@ describe('GET /api/rooms/validate', () => {
 // POST /api/rooms/:id/leave
 // ===========================================================================
 describe('POST /api/rooms/:id/leave', () => {
-  test('removes session on leave', async () => {
+  it('removes session on leave', async () => {
     const { roomId, token } = await createRoom();
 
     const res = await request(app)
@@ -378,7 +378,7 @@ describe('POST /api/rooms/:id/leave', () => {
       .expect(401);
   });
 
-  test('rejects invalid room ID format', async () => {
+  it('rejects invalid room ID format', async () => {
     const { token } = await createRoom();
 
     await request(app)
@@ -387,7 +387,7 @@ describe('POST /api/rooms/:id/leave', () => {
       .expect(400);
   });
 
-  test('requires authentication', async () => {
+  it('requires authentication', async () => {
     await request(app)
       .post('/api/rooms/deadbeef/leave')
       .expect(401);
@@ -398,7 +398,7 @@ describe('POST /api/rooms/:id/leave', () => {
 // GET /api/rooms/:id/export
 // ===========================================================================
 describe('GET /api/rooms/:id/export', () => {
-  test('exports room data as ZIP', async () => {
+  it('exports room data as ZIP', async () => {
     const { roomId, token } = await createRoom({ name: 'ExportRoom' });
 
     const res = await request(app)
@@ -414,7 +414,7 @@ describe('GET /api/rooms/:id/export', () => {
     expect(res.body.length).toBeGreaterThan(0);
   });
 
-  test('requires authentication', async () => {
+  it('requires authentication', async () => {
     await request(app)
       .get('/api/rooms/deadbeef/export')
       .expect(401);
@@ -425,7 +425,7 @@ describe('GET /api/rooms/:id/export', () => {
 // POST /api/rooms/:id/import
 // ===========================================================================
 describe('POST /api/rooms/:id/import', () => {
-  test('imports valid ZIP with tabs.json', async () => {
+  it('imports valid ZIP with tabs.json', async () => {
     const { roomId, token } = await createRoom({ name: 'ImportRoom' });
     const AdmZip = require('adm-zip');
     const zip = new AdmZip();
@@ -446,7 +446,7 @@ describe('POST /api/rooms/:id/import', () => {
     expect(res.body.ok).toBe(true);
   });
 
-  test('rejects zip-slip path traversal', async () => {
+  it('rejects zip-slip path traversal', async () => {
     const { roomId, token } = await createRoom({ name: 'ZipSlipRoom' });
     const AdmZip = require('adm-zip');
     const zip = new AdmZip();
@@ -499,7 +499,7 @@ describe('POST /api/rooms/:id/import', () => {
     expect(res.body.ok).toBe(true);
   });
 
-  test('rejects empty body', async () => {
+  it('rejects empty body', async () => {
     const { roomId, token } = await createRoom({ name: 'EmptyImport' });
 
     const res = await request(app)
@@ -512,7 +512,7 @@ describe('POST /api/rooms/:id/import', () => {
     expect(res.body.error).toMatch(/no file/i);
   });
 
-  test('requires authentication', async () => {
+  it('requires authentication', async () => {
     await request(app)
       .post('/api/rooms/deadbeef/import')
       .set('Content-Type', 'application/octet-stream')
@@ -525,7 +525,7 @@ describe('POST /api/rooms/:id/import', () => {
 // PATCH /api/rooms/:id
 // ===========================================================================
 describe('PATCH /api/rooms/:id', () => {
-  test('renames room successfully', async () => {
+  it('renames room successfully', async () => {
     const { roomId, token } = await createRoom({ name: 'OldName' });
 
     const res = await request(app)
@@ -538,7 +538,7 @@ describe('PATCH /api/rooms/:id', () => {
     expect(res.body.name).toBe('NewName');
   });
 
-  test('broadcasts room-renamed event', async () => {
+  it('broadcasts room-renamed event', async () => {
     const { roomId, token } = await createRoom({ name: 'BroadcastRoom' });
     ctx.clearBroadcasts();
 
@@ -554,7 +554,7 @@ describe('PATCH /api/rooms/:id', () => {
     expect(bc.roomId).toBe(roomId);
   });
 
-  test('rejects empty name', async () => {
+  it('rejects empty name', async () => {
     const { roomId, token } = await createRoom();
 
     await request(app)
@@ -564,7 +564,7 @@ describe('PATCH /api/rooms/:id', () => {
       .expect(400);
   });
 
-  test('rejects missing name', async () => {
+  it('rejects missing name', async () => {
     const { roomId, token } = await createRoom();
 
     await request(app)
@@ -574,7 +574,7 @@ describe('PATCH /api/rooms/:id', () => {
       .expect(400);
   });
 
-  test('rejects invalid room ID format', async () => {
+  it('rejects invalid room ID format', async () => {
     const { token } = await createRoom();
 
     await request(app)
@@ -583,7 +583,7 @@ describe('PATCH /api/rooms/:id', () => {
       .expect(400);
   });
 
-  test('rejects request for different room than current session', async () => {
+  it('rejects request for different room than current session', async () => {
     const { token } = await createRoom();
 
     await request(app)
@@ -592,7 +592,7 @@ describe('PATCH /api/rooms/:id', () => {
       .expect(403);
   });
 
-  test('requires authentication', async () => {
+  it('requires authentication', async () => {
     await request(app)
       .patch('/api/rooms/deadbeef')
       .send({ name: 'NewName' })
@@ -604,7 +604,7 @@ describe('PATCH /api/rooms/:id', () => {
 // DELETE /api/rooms/:id
 // ===========================================================================
 describe('DELETE /api/rooms/:id', () => {
-  test('creator can delete room', async () => {
+  it('creator can delete room', async () => {
     const { roomId, token } = await createRoom({ name: 'DeleteMe' });
 
     const res = await request(app)
@@ -620,7 +620,7 @@ describe('DELETE /api/rooms/:id', () => {
     expect(found).toBeUndefined();
   });
 
-  test('non-creator cannot delete room', async () => {
+  it('non-creator cannot delete room', async () => {
     const { roomId } = await createRoom({ password: 'password123', nickname: 'creator' });
 
     // Join as a different user
@@ -632,7 +632,7 @@ describe('DELETE /api/rooms/:id', () => {
       .expect(403);
   });
 
-  test('broadcasts room-deleted event', async () => {
+  it('broadcasts room-deleted event', async () => {
     const { roomId, token } = await createRoom({ name: 'BroadcastDelete' });
     ctx.clearBroadcasts();
 
@@ -646,7 +646,7 @@ describe('DELETE /api/rooms/:id', () => {
     expect(bc.roomId).toBe(roomId);
   });
 
-  test('cleans up sessions after deletion', async () => {
+  it('cleans up sessions after deletion', async () => {
     const { roomId, token } = await createRoom({ name: 'CleanupRoom', password: 'password123' });
     // Join a second user
     const { token: joinerToken } = await joinRoom(roomId, 'password123', 'joiner');
@@ -663,7 +663,7 @@ describe('DELETE /api/rooms/:id', () => {
       .expect(401);
   });
 
-  test('rejects invalid room ID format', async () => {
+  it('rejects invalid room ID format', async () => {
     const { token } = await createRoom();
 
     await request(app)
@@ -672,7 +672,7 @@ describe('DELETE /api/rooms/:id', () => {
       .expect(400);
   });
 
-  test('rejects request for different room than current session', async () => {
+  it('rejects request for different room than current session', async () => {
     const { token } = await createRoom();
 
     await request(app)
@@ -681,7 +681,7 @@ describe('DELETE /api/rooms/:id', () => {
       .expect(403);
   });
 
-  test('returns 404 when room not found in data', async () => {
+  it('returns 404 when room not found in data', async () => {
     // Create a room, then manually remove it from rooms.json so the ID is valid
     // but the data is gone
     const { roomId, token } = await createRoom({ name: 'Ghost' });
@@ -698,7 +698,7 @@ describe('DELETE /api/rooms/:id', () => {
       .expect(404);
   });
 
-  test('requires authentication', async () => {
+  it('requires authentication', async () => {
     await request(app)
       .delete('/api/rooms/deadbeef')
       .expect(401);
@@ -723,7 +723,7 @@ describe('ALLOWED_WORKDIR_BASE restriction', () => {
     await fsp.rm(allowedBase, { recursive: true, force: true }).catch(() => {});
   });
 
-  test('allows workDir within allowed base', async () => {
+  it('allows workDir within allowed base', async () => {
     const res = await request(restrictedApp)
       .post('/api/rooms')
       .send({
@@ -737,7 +737,7 @@ describe('ALLOWED_WORKDIR_BASE restriction', () => {
     expect(res.body.room.workDir).toBe(path.join(allowedBase, 'project1'));
   });
 
-  test('rejects workDir outside allowed base', async () => {
+  it('rejects workDir outside allowed base', async () => {
     const res = await request(restrictedApp)
       .post('/api/rooms')
       .send({
@@ -751,7 +751,7 @@ describe('ALLOWED_WORKDIR_BASE restriction', () => {
     expect(res.body.error).toMatch(/allowed base/i);
   });
 
-  test('rejects workDir that traverses out of allowed base', async () => {
+  it('rejects workDir that traverses out of allowed base', async () => {
     const res = await request(restrictedApp)
       .post('/api/rooms')
       .send({
@@ -764,7 +764,7 @@ describe('ALLOWED_WORKDIR_BASE restriction', () => {
     expect(res.status).toBe(400);
   });
 
-  test('allows workDir equal to allowed base itself', async () => {
+  it('allows workDir equal to allowed base itself', async () => {
     const res = await request(restrictedApp)
       .post('/api/rooms')
       .send({
@@ -777,7 +777,7 @@ describe('ALLOWED_WORKDIR_BASE restriction', () => {
     expect(res.status).toBe(201);
   });
 
-  test('allows room creation without workDir when base is set', async () => {
+  it('allows room creation without workDir when base is set', async () => {
     const res = await request(restrictedApp)
       .post('/api/rooms')
       .send({

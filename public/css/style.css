@@ -5305,6 +5305,15 @@ body {
   color: var(--ctp-text);
 }
 
+a.of-value {
+  color: var(--ctp-blue);
+  text-decoration: none;
+}
+
+a.of-value:hover {
+  text-decoration: underline;
+}
+
 .of-in-scope .of-value {
   color: var(--ctp-overlay0);
 }

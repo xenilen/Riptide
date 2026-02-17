@@ -175,7 +175,7 @@ describe('Room Isolation', () => {
   // Tab isolation
   // -------------------------------------------------------------------------
   describe('Tab access across rooms', () => {
-    test('user in Room A cannot see Room B tabs in their tab list', async () => {
+    it('user in Room A cannot see Room B tabs in their tab list', async () => {
       const res = await request(app)
         .get('/api/tabs')
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -186,7 +186,7 @@ describe('Room Isolation', () => {
       expect(tabIds).not.toContain(tabIdB);
     });
 
-    test('user in Room A cannot PATCH a tab belonging to Room B', async () => {
+    it('user in Room A cannot PATCH a tab belonging to Room B', async () => {
       await request(app)
         .patch(`/api/tabs/${tabIdB}`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -194,7 +194,7 @@ describe('Room Isolation', () => {
         .expect(404);
     });
 
-    test('user in Room A cannot DELETE a tab belonging to Room B', async () => {
+    it('user in Room A cannot DELETE a tab belonging to Room B', async () => {
       // Room A has only 1 tab (the default), so DELETE returns 400 "last tab"
       // before it even looks up tabIdB. Either way, Room B's tab is safe.
       const res = await request(app)
@@ -210,21 +210,21 @@ describe('Room Isolation', () => {
   // Note isolation
   // -------------------------------------------------------------------------
   describe('Note access across rooms', () => {
-    test('user in Room A cannot GET notes list from Room B tab', async () => {
+    it('user in Room A cannot GET notes list from Room B tab', async () => {
       await request(app)
         .get(`/api/tabs/${tabIdB}/notes`)
         .set('Authorization', `Bearer ${roomA.token}`)
         .expect(404);
     });
 
-    test('user in Room A cannot GET a specific note from Room B tab', async () => {
+    it('user in Room A cannot GET a specific note from Room B tab', async () => {
       await request(app)
         .get(`/api/tabs/${tabIdB}/notes/${noteIdB}`)
         .set('Authorization', `Bearer ${roomA.token}`)
         .expect(404);
     });
 
-    test('user in Room A cannot PUT (update) a note in Room B tab', async () => {
+    it('user in Room A cannot PUT (update) a note in Room B tab', async () => {
       await request(app)
         .put(`/api/tabs/${tabIdB}/notes/${noteIdB}`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -232,7 +232,7 @@ describe('Room Isolation', () => {
         .expect(404);
     });
 
-    test('user in Room A cannot POST a new note to Room B tab', async () => {
+    it('user in Room A cannot POST a new note to Room B tab', async () => {
       await request(app)
         .post(`/api/tabs/${tabIdB}/notes`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -240,14 +240,14 @@ describe('Room Isolation', () => {
         .expect(404);
     });
 
-    test('user in Room A cannot DELETE a note in Room B tab', async () => {
+    it('user in Room A cannot DELETE a note in Room B tab', async () => {
       await request(app)
         .delete(`/api/tabs/${tabIdB}/notes/${noteIdB}`)
         .set('Authorization', `Bearer ${roomA.token}`)
         .expect(404);
     });
 
-    test('user in Room A cannot append to a note in Room B tab', async () => {
+    it('user in Room A cannot append to a note in Room B tab', async () => {
       await request(app)
         .post(`/api/tabs/${tabIdB}/notes/${noteIdB}/append`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -255,7 +255,7 @@ describe('Room Isolation', () => {
         .expect(404);
     });
 
-    test('user in Room A cannot change note severity in Room B tab', async () => {
+    it('user in Room A cannot change note severity in Room B tab', async () => {
       await request(app)
         .patch(`/api/tabs/${tabIdB}/notes/${noteIdB}/severity`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -263,7 +263,7 @@ describe('Room Isolation', () => {
         .expect(404);
     });
 
-    test('user in Room A cannot reorder notes in Room B tab', async () => {
+    it('user in Room A cannot reorder notes in Room B tab', async () => {
       await request(app)
         .put(`/api/tabs/${tabIdB}/notes/order`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -276,14 +276,14 @@ describe('Room Isolation', () => {
   // Tab credential isolation
   // -------------------------------------------------------------------------
   describe('Tab credential access across rooms', () => {
-    test('user in Room A cannot GET credentials from Room B tab', async () => {
+    it('user in Room A cannot GET credentials from Room B tab', async () => {
       await request(app)
         .get(`/api/tabs/${tabIdB}/credentials`)
         .set('Authorization', `Bearer ${roomA.token}`)
         .expect(404);
     });
 
-    test('user in Room A cannot POST credentials to Room B tab', async () => {
+    it('user in Room A cannot POST credentials to Room B tab', async () => {
       await request(app)
         .post(`/api/tabs/${tabIdB}/credentials`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -291,7 +291,7 @@ describe('Room Isolation', () => {
         .expect(404);
     });
 
-    test('user in Room A cannot PUT (update) a credential in Room B tab', async () => {
+    it('user in Room A cannot PUT (update) a credential in Room B tab', async () => {
       await request(app)
         .put(`/api/tabs/${tabIdB}/credentials/${credIdB}`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -299,7 +299,7 @@ describe('Room Isolation', () => {
         .expect(404);
     });
 
-    test('user in Room A cannot DELETE a credential from Room B tab', async () => {
+    it('user in Room A cannot DELETE a credential from Room B tab', async () => {
       await request(app)
         .delete(`/api/tabs/${tabIdB}/credentials/${credIdB}`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -311,7 +311,7 @@ describe('Room Isolation', () => {
   // Global credential isolation
   // -------------------------------------------------------------------------
   describe('Global credential access across rooms', () => {
-    test('user in Room A cannot see Room B global credentials', async () => {
+    it('user in Room A cannot see Room B global credentials', async () => {
       const res = await request(app)
         .get('/api/credentials')
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -326,14 +326,14 @@ describe('Room Isolation', () => {
   // History isolation
   // -------------------------------------------------------------------------
   describe('History access across rooms', () => {
-    test('user in Room A cannot GET history from Room B tab', async () => {
+    it('user in Room A cannot GET history from Room B tab', async () => {
       await request(app)
         .get(`/api/tabs/${tabIdB}/history`)
         .set('Authorization', `Bearer ${roomA.token}`)
         .expect(404);
     });
 
-    test('user in Room A cannot POST history to Room B tab', async () => {
+    it('user in Room A cannot POST history to Room B tab', async () => {
       await request(app)
         .post(`/api/tabs/${tabIdB}/history`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -341,7 +341,7 @@ describe('Room Isolation', () => {
         .expect(404);
     });
 
-    test('user in Room A cannot DELETE history from Room B tab', async () => {
+    it('user in Room A cannot DELETE history from Room B tab', async () => {
       await request(app)
         .delete(`/api/tabs/${tabIdB}/history`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -353,7 +353,7 @@ describe('Room Isolation', () => {
   // Scratch note isolation
   // -------------------------------------------------------------------------
   describe('Scratch note access across rooms', () => {
-    test('user in Room A cannot GET tab-scoped scratch notes from Room B', async () => {
+    it('user in Room A cannot GET tab-scoped scratch notes from Room B', async () => {
       const res = await request(app)
         .get(`/api/scratch-notes?scope=tab&tabId=${tabIdB}`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -364,7 +364,7 @@ describe('Room Isolation', () => {
       expect(res.body.error).toMatch(/tab not found/i);
     });
 
-    test('user in Room A cannot see Room B global scratch notes', async () => {
+    it('user in Room A cannot see Room B global scratch notes', async () => {
       const res = await request(app)
         .get('/api/scratch-notes?scope=global')
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -374,7 +374,7 @@ describe('Room Isolation', () => {
       expect(res.body).toEqual([]);
     });
 
-    test('user in Room A cannot POST tab scratch note to Room B tab', async () => {
+    it('user in Room A cannot POST tab scratch note to Room B tab', async () => {
       await request(app)
         .post('/api/scratch-notes')
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -387,7 +387,7 @@ describe('Room Isolation', () => {
   // Variable isolation
   // -------------------------------------------------------------------------
   describe('Variable access across rooms', () => {
-    test('user in Room A cannot see Room B global variables', async () => {
+    it('user in Room A cannot see Room B global variables', async () => {
       const res = await request(app)
         .get('/api/variables')
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -402,7 +402,7 @@ describe('Room Isolation', () => {
   // Room management isolation (cross-room ID mismatch)
   // -------------------------------------------------------------------------
   describe('Room management across rooms', () => {
-    test('user in Room A cannot PATCH (rename) Room B', async () => {
+    it('user in Room A cannot PATCH (rename) Room B', async () => {
       await request(app)
         .patch(`/api/rooms/${roomB.roomId}`)
         .set('Authorization', `Bearer ${roomA.token}`)
@@ -410,14 +410,14 @@ describe('Room Isolation', () => {
         .expect(403);
     });
 
-    test('user in Room A cannot DELETE Room B', async () => {
+    it('user in Room A cannot DELETE Room B', async () => {
       await request(app)
         .delete(`/api/rooms/${roomB.roomId}`)
         .set('Authorization', `Bearer ${roomA.token}`)
         .expect(403);
     });
 
-    test('user in Room A exporting with Room B ID gets own room data, not Room B data', async () => {
+    it('user in Room A exporting with Room B ID gets own room data, not Room B data', async () => {
       // The export route uses req.roomId (from token = Room A), NOT req.params.id.
       // So the response is a ZIP of Room A's data — Room B's data is never exposed.
       const res = await request(app)
@@ -438,7 +438,7 @@ describe('Room Isolation', () => {
       }
     });
 
-    test('user in Room A importing with Room B ID writes to own room, not Room B', async () => {
+    it('user in Room A importing with Room B ID writes to own room, not Room B', async () => {
       // The import route uses req.roomId (from token = Room A), NOT req.params.id.
       // So the data is imported into Room A's directory — Room B is unaffected.
       const AdmZip = require('adm-zip');
@@ -460,7 +460,7 @@ describe('Room Isolation', () => {
   // Verify Room B data is still intact after all cross-room attempts
   // -------------------------------------------------------------------------
   describe('Room B data integrity after cross-room attempts', () => {
-    test('Room B note content is unchanged', async () => {
+    it('Room B note content is unchanged', async () => {
       const res = await request(app)
         .get(`/api/tabs/${tabIdB}/notes/${noteIdB}`)
         .set('Authorization', `Bearer ${roomB.token}`)
@@ -469,7 +469,7 @@ describe('Room Isolation', () => {
       expect(res.body.content).toBe('# Test\n\nContent');
     });
 
-    test('Room B credentials are unchanged', async () => {
+    it('Room B credentials are unchanged', async () => {
       const res = await request(app)
         .get(`/api/tabs/${tabIdB}/credentials`)
         .set('Authorization', `Bearer ${roomB.token}`)
@@ -480,7 +480,7 @@ describe('Room Isolation', () => {
       expect(res.body[0].username).toBe('root');
     });
 
-    test('Room B history is unchanged', async () => {
+    it('Room B history is unchanged', async () => {
       const res = await request(app)
         .get(`/api/tabs/${tabIdB}/history`)
         .set('Authorization', `Bearer ${roomB.token}`)
@@ -490,7 +490,7 @@ describe('Room Isolation', () => {
       expect(res.body[0].command).toBe('cat /etc/shadow');
     });
 
-    test('Room B tab still exists with original name', async () => {
+    it('Room B tab still exists with original name', async () => {
       const res = await request(app)
         .get('/api/tabs')
         .set('Authorization', `Bearer ${roomB.token}`)
@@ -501,7 +501,7 @@ describe('Room Isolation', () => {
       expect(tab.name).toBe('BetaTarget');
     });
 
-    test('Room B global variables are unchanged', async () => {
+    it('Room B global variables are unchanged', async () => {
       const res = await request(app)
         .get('/api/variables')
         .set('Authorization', `Bearer ${roomB.token}`)
@@ -532,14 +532,14 @@ describe('Creator-Only Authorization', () => {
   describe('DELETE /api/rooms/:id (creator-only)', () => {
     // This is already tested in rooms.test.js but included here for
     // completeness of the security test suite.
-    test('non-creator cannot delete room', async () => {
+    it('non-creator cannot delete room', async () => {
       await request(app)
         .delete(`/api/rooms/${creatorData.roomId}`)
         .set('Authorization', `Bearer ${joinerToken}`)
         .expect(403);
     });
 
-    test('creator can delete room', async () => {
+    it('creator can delete room', async () => {
       // Create a disposable room to test deletion
       const disposable = await createRoom({
         name: 'Disposable',
@@ -558,7 +558,7 @@ describe('Creator-Only Authorization', () => {
     // The PATCH route only checks req.roomId === req.params.id (same room)
     // but does NOT enforce creator-only access. This means any room member
     // can rename the room. This test documents the current behavior.
-    test('non-creator CAN rename the room (no creator-only check)', async () => {
+    it('non-creator CAN rename the room (no creator-only check)', async () => {
       const res = await request(app)
         .patch(`/api/rooms/${creatorData.roomId}`)
         .set('Authorization', `Bearer ${joinerToken}`)
@@ -569,7 +569,7 @@ describe('Creator-Only Authorization', () => {
       expect(res.body.name).toBe('Renamed by Member');
     });
 
-    test('user from a different room still cannot rename', async () => {
+    it('user from a different room still cannot rename', async () => {
       const otherRoom = await createRoom({
         name: 'Other Room',
         nickname: 'outsider'
@@ -586,7 +586,7 @@ describe('Creator-Only Authorization', () => {
   describe('POST /api/rooms/:id/import (any room member)', () => {
     // Import also only checks requireRoom (same room), no creator check.
     // This test documents the current behavior.
-    test('non-creator CAN import data (no creator-only check)', async () => {
+    it('non-creator CAN import data (no creator-only check)', async () => {
       const AdmZip = require('adm-zip');
       const zip = new AdmZip();
       const tabsContent = JSON.stringify({
@@ -605,7 +605,7 @@ describe('Creator-Only Authorization', () => {
       expect(res.body.ok).toBe(true);
     });
 
-    test('user from a different room importing with this room ID writes to their own room', async () => {
+    it('user from a different room importing with this room ID writes to their own room', async () => {
       // Import uses req.roomId (from token), not req.params.id.
       // So the outsider's data goes to their own room, not the target room.
       const otherRoom = await createRoom({

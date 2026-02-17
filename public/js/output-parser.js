@@ -230,11 +230,23 @@ Riptide.OutputParser = {
         const itemDiv = document.createElement('div');
         itemDiv.className = inScope ? 'of-item of-in-scope' : 'of-item';
 
-        const valueSpan = document.createElement('span');
-        valueSpan.className = 'of-value';
-        valueSpan.textContent = finding.value;
-        valueSpan.title = finding.value;
-        itemDiv.appendChild(valueSpan);
+        // URL findings get a clickable link; others get a plain span
+        if (finding.category === 'url') {
+          const valueLink = document.createElement('a');
+          valueLink.className = 'of-value';
+          valueLink.href = finding.value;
+          valueLink.textContent = finding.value;
+          valueLink.title = finding.value;
+          valueLink.target = '_blank';
+          valueLink.rel = 'noopener noreferrer';
+          itemDiv.appendChild(valueLink);
+        } else {
+          const valueSpan = document.createElement('span');
+          valueSpan.className = 'of-value';
+          valueSpan.textContent = finding.value;
+          valueSpan.title = finding.value;
+          itemDiv.appendChild(valueSpan);
+        }
 
         // Primary action button
         if (finding.action !== 'copy') {

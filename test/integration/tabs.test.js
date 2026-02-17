@@ -61,7 +61,7 @@ async function createRoomSimple() {
 // GET /api/tabs
 // ===========================================================================
 describe('GET /api/tabs', () => {
-  test('returns tabs array for room', async () => {
+  it('returns tabs array for room', async () => {
     const { token } = await createRoomSimple();
 
     const res = await request(app)
@@ -76,7 +76,7 @@ describe('GET /api/tabs', () => {
     expect(res.body.tabs[0].name).toBe('Main');
   });
 
-  test('requires authentication', async () => {
+  it('requires authentication', async () => {
     await request(app)
       .get('/api/tabs')
       .expect(401);
@@ -87,7 +87,7 @@ describe('GET /api/tabs', () => {
 // POST /api/tabs
 // ===========================================================================
 describe('POST /api/tabs', () => {
-  test('creates a new tab with valid name', async () => {
+  it('creates a new tab with valid name', async () => {
     const { token } = await createRoomSimple();
 
     const res = await request(app)
@@ -103,7 +103,7 @@ describe('POST /api/tabs', () => {
     expect(res.body.status).toBeNull();
   });
 
-  test('broadcasts tab-created event', async () => {
+  it('broadcasts tab-created event', async () => {
     const { token } = await createRoomSimple();
     ctx.clearBroadcasts();
 
@@ -118,7 +118,7 @@ describe('POST /api/tabs', () => {
     expect(bc.event.tab.name).toBe('BroadcastTab');
   });
 
-  test('rejects missing name', async () => {
+  it('rejects missing name', async () => {
     const { token } = await createRoomSimple();
 
     await request(app)
@@ -128,7 +128,7 @@ describe('POST /api/tabs', () => {
       .expect(400);
   });
 
-  test('rejects empty name', async () => {
+  it('rejects empty name', async () => {
     const { token } = await createRoomSimple();
 
     await request(app)
@@ -138,7 +138,7 @@ describe('POST /api/tabs', () => {
       .expect(400);
   });
 
-  test('trims tab name', async () => {
+  it('trims tab name', async () => {
     const { token } = await createRoomSimple();
 
     const res = await request(app)
@@ -150,7 +150,7 @@ describe('POST /api/tabs', () => {
     expect(res.body.name).toBe('Trimmed Tab');
   });
 
-  test('creates tab data directory when workDir is set', async () => {
+  it('creates tab data directory when workDir is set', async () => {
     const { token, workDir } = await createRoomWithWorkDir();
 
     await request(app)
@@ -166,7 +166,7 @@ describe('POST /api/tabs', () => {
     expect(stat.isDirectory()).toBe(true);
   });
 
-  test('requires authentication', async () => {
+  it('requires authentication', async () => {
     await request(app)
       .post('/api/tabs')
       .send({ name: 'NoAuth' })
@@ -178,7 +178,7 @@ describe('POST /api/tabs', () => {
 // PATCH /api/tabs/:id
 // ===========================================================================
 describe('PATCH /api/tabs/:id', () => {
-  test('updates tab name', async () => {
+  it('updates tab name', async () => {
     const { token } = await createRoomSimple();
 
     // Create a tab first
@@ -206,7 +206,7 @@ describe('PATCH /api/tabs/:id', () => {
     expect(updated.name).toBe('UpdatedName');
   });
 
-  test('broadcasts tab-renamed on name change', async () => {
+  it('broadcasts tab-renamed on name change', async () => {
     const { token } = await createRoomSimple();
     const createRes = await request(app)
       .post('/api/tabs')
@@ -227,7 +227,7 @@ describe('PATCH /api/tabs/:id', () => {
     expect(bc.event.name).toBe('Renamed');
   });
 
-  test('updates tab status', async () => {
+  it('updates tab status', async () => {
     const { token } = await createRoomSimple();
     const createRes = await request(app)
       .post('/api/tabs')
@@ -248,7 +248,7 @@ describe('PATCH /api/tabs/:id', () => {
     expect(bc.event.status).toBe('recon');
   });
 
-  test('rejects invalid status value', async () => {
+  it('rejects invalid status value', async () => {
     const { token } = await createRoomSimple();
     const createRes = await request(app)
       .post('/api/tabs')
@@ -263,7 +263,7 @@ describe('PATCH /api/tabs/:id', () => {
       .expect(400);
   });
 
-  test('accepts all valid status values', async () => {
+  it('accepts all valid status values', async () => {
     const { token } = await createRoomSimple();
     const validStatuses = [null, 'recon', 'exploit', 'post-exploit', 'pwned', 'blocked'];
 
@@ -282,7 +282,7 @@ describe('PATCH /api/tabs/:id', () => {
     }
   });
 
-  test('updates variables and broadcasts', async () => {
+  it('updates variables and broadcasts', async () => {
     const { token } = await createRoomSimple();
     const createRes = await request(app)
       .post('/api/tabs')
@@ -303,7 +303,7 @@ describe('PATCH /api/tabs/:id', () => {
     expect(bc.event.variables.TargetIP).toBe('10.0.0.1');
   });
 
-  test('rejects __proto__ in variables (prototype pollution)', async () => {
+  it('rejects __proto__ in variables (prototype pollution)', async () => {
     const { token } = await createRoomSimple();
     const createRes = await request(app)
       .post('/api/tabs')
@@ -324,7 +324,7 @@ describe('PATCH /api/tabs/:id', () => {
       .expect(200);
   });
 
-  test('rejects constructor in variables (prototype pollution)', async () => {
+  it('rejects constructor in variables (prototype pollution)', async () => {
     const { token } = await createRoomSimple();
     const createRes = await request(app)
       .post('/api/tabs')
@@ -339,7 +339,7 @@ describe('PATCH /api/tabs/:id', () => {
       .expect(400);
   });
 
-  test('returns 404 for non-existent tab', async () => {
+  it('returns 404 for non-existent tab', async () => {
     const { token } = await createRoomSimple();
 
     await request(app)
@@ -349,7 +349,7 @@ describe('PATCH /api/tabs/:id', () => {
       .expect(404);
   });
 
-  test('rejects invalid tab ID format', async () => {
+  it('rejects invalid tab ID format', async () => {
     const { token } = await createRoomSimple();
 
     await request(app)
@@ -359,7 +359,7 @@ describe('PATCH /api/tabs/:id', () => {
       .expect(400);
   });
 
-  test('renames workDir folder on name change', async () => {
+  it('renames workDir folder on name change', async () => {
     const { token, workDir } = await createRoomWithWorkDir();
     const createRes = await request(app)
       .post('/api/tabs')
@@ -388,7 +388,7 @@ describe('PATCH /api/tabs/:id', () => {
     expect(oldStatAfter).toBeNull();
   });
 
-  test('updates scope field', async () => {
+  it('updates scope field', async () => {
     const { token } = await createRoomSimple();
     const createRes = await request(app)
       .post('/api/tabs')
@@ -409,7 +409,7 @@ describe('PATCH /api/tabs/:id', () => {
     expect(bc.event.scope).toBe('internal');
   });
 
-  test('requires authentication', async () => {
+  it('requires authentication', async () => {
     await request(app)
       .patch('/api/tabs/deadbeef')
       .send({ name: 'NoAuth' })
@@ -421,7 +421,7 @@ describe('PATCH /api/tabs/:id', () => {
 // DELETE /api/tabs/:id
 // ===========================================================================
 describe('DELETE /api/tabs/:id', () => {
-  test('deletes a tab (when more than one exists)', async () => {
+  it('deletes a tab (when more than one exists)', async () => {
     const { token } = await createRoomSimple();
 
     // Room starts with 1 tab (Main). Create a second.
@@ -448,7 +448,7 @@ describe('DELETE /api/tabs/:id', () => {
     expect(found).toBeUndefined();
   });
 
-  test('prevents deleting the last tab', async () => {
+  it('prevents deleting the last tab', async () => {
     const { token } = await createRoomSimple();
 
     // Get the default Main tab ID
@@ -467,7 +467,7 @@ describe('DELETE /api/tabs/:id', () => {
     expect(res.body.error).toMatch(/last tab/i);
   });
 
-  test('broadcasts tab-deleted event', async () => {
+  it('broadcasts tab-deleted event', async () => {
     const { token } = await createRoomSimple();
 
     const createRes = await request(app)
@@ -488,7 +488,7 @@ describe('DELETE /api/tabs/:id', () => {
     expect(bc.event.tabId).toBe(createRes.body.id);
   });
 
-  test('cleans up edit locks for deleted tab', async () => {
+  it('cleans up edit locks for deleted tab', async () => {
     const { roomId, token } = await createRoomSimple();
 
     const createRes = await request(app)
@@ -516,7 +516,7 @@ describe('DELETE /api/tabs/:id', () => {
     expect(ctx.editLocks.has(lockKey)).toBe(false);
   });
 
-  test('returns 404 for non-existent tab', async () => {
+  it('returns 404 for non-existent tab', async () => {
     const { token } = await createRoomSimple();
 
     // Room starts with 1 tab (Main). The DELETE handler at line 165 checks
@@ -536,7 +536,7 @@ describe('DELETE /api/tabs/:id', () => {
       .expect(404);
   });
 
-  test('rejects invalid tab ID format', async () => {
+  it('rejects invalid tab ID format', async () => {
     const { token } = await createRoomSimple();
 
     await request(app)
@@ -545,7 +545,7 @@ describe('DELETE /api/tabs/:id', () => {
       .expect(400);
   });
 
-  test('requires authentication', async () => {
+  it('requires authentication', async () => {
     await request(app)
       .delete('/api/tabs/deadbeef')
       .expect(401);
