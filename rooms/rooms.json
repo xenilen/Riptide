@@ -1,1 +1,13 @@
-{"rooms":[]}
+{
+  "rooms": [
+    {
+      "id": "77d79bad945cdf14",
+      "name": "Test Room",
+      "passwordHash": "c006e020f1976c21949d71c75d0b0d9d:cc97bf581ebac9f81b0fb4b717f70a2acf7d59f53b6dccb2b965279acc04374d3a5fea6857f32bca7b8388a48992231dd2ef7cb906a918ba22082d794ffc5f33",
+      "created": "2026-02-17T01:44:46.722Z",
+      "workDir": null,
+      "creator": "M",
+      "creatorTokenHash": "d5d0579ed7e327639b1242f58d624366f3c9f6471a63213f39be0b54dcf1a017"
+    }
+  ]
+}

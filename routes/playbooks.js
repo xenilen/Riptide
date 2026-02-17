@@ -207,7 +207,7 @@ module.exports = function(ctx) {
   router.get('/playbooks/:id', requireRoom, async (req, res) => {
     try {
       const id = req.params.id;
-      if (!id || !/^[a-zA-Z0-9_-]+$/.test(id)) {
+      if (!id || !/^[a-zA-Z0-9 _-]+$/.test(id)) {
         return res.status(400).json({ error: 'Invalid playbook ID' });
       }
 
