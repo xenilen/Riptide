@@ -1,7 +1,7 @@
 FROM node:alpine
 
 WORKDIR /app
-RUN apk add --no-cache git python3 build-base openssl
+RUN apk add --no-cache git python3 build-base openssl bash xterm
 RUN git clone https://github.com/Real-Fruit-Snacks/Riptide.git /app
 RUN npm install
 
