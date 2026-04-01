@@ -108,6 +108,8 @@ Built-in messaging with global (room-wide) and tab-scoped channels. Messages gro
 
 ### Install & Launch
 
+#### Local
+
 ```bash
 git clone https://github.com/Real-Fruit-Snacks/Riptide.git
 cd Riptide
@@ -128,6 +130,32 @@ SSL_KEY=/path/to/your.key SSL_CERT=/path/to/your.cert npm start
 
 # Or use the launch script with flags
 ./start.sh --no-ssl --port 8443
+```
+
+#### Docker
+
+##### Build
+
+``` bash
+docker build -t riptide https://github.com/Real-Fruit-Snacks/Riptide.git
+```
+
+##### Run with HTTPS
+
+``` bash
+docker run --name riptide -p 3000:3000 -d riptide
+```
+
+##### Run with HTTP
+
+``` bash
+docker run --name riptide -e NO_SSL=1 -p 3000:3000 -d riptide
+```
+
+##### Stop
+
+``` bash
+docker stop riptide && docker rm riptide
 ```
 
 ### Development
